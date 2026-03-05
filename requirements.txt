@@ -1,0 +1,10 @@
+Flask
+werkzeug
+langchain
+langchain-community
+langchain-chroma
+chromadb
+PyPDF2
+sentence-transformers
+langchain-huggingface
+fpdf
