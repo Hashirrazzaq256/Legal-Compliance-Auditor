@@ -150,7 +150,7 @@
                             <div>
                                 <p class="text-sm font-semibold text-slate-900">Target Contract (PDF)</p>
                                 <p class="mt-1 text-xs text-slate-500">Drop file here or click to browse</p>
-                                <p id="contractFileName" class="mt-2 text-xs font-medium text-blue-700">No file selected</p>
+                                <p id="contractFileName" role="status" aria-live="polite" class="mt-2 text-xs font-medium text-blue-700">No file selected</p>
                             </div>
                         </div>
                     </label>
@@ -164,7 +164,7 @@
                             <div>
                                 <p class="text-sm font-semibold text-slate-900">Company Policies (PDF)</p>
                                 <p class="mt-1 text-xs text-slate-500">Drop file here or click to browse</p>
-                                <p id="policiesFileName" class="mt-2 text-xs font-medium text-emerald-700">No file selected</p>
+                                <p id="policiesFileName" role="status" aria-live="polite" class="mt-2 text-xs font-medium text-emerald-700">No file selected</p>
                             </div>
                         </div>
                     </label>
@@ -246,6 +246,12 @@
 
         const formatRiskLabel = (count) => `${count} Risk${count !== 1 ? 's' : ''}`;
         const isPdfFile = (file) => Boolean(file) && (file.type === 'application/pdf' || /\.pdf$/i.test(file.name));
+        const normalizeText = (value, fallback = 'N/A') => {
+            const text = String(value ?? '').trim();
+            if (!text) return fallback;
+            const lowered = text.toLowerCase();
+            return lowered === 'null' || lowered === 'undefined' ? fallback : text;
+        };
 
         const updateFileName = (input, label) => {
             const file = input.files?.[0];
@@ -330,7 +336,7 @@
 
                 const clause = document.createElement('p');
                 clause.className = `text-xs font-semibold uppercase tracking-wide ${isHighRisk ? 'text-red-800' : 'text-emerald-800'}`;
-                clause.textContent = String(item.clause ?? '');
+                clause.textContent = normalizeText(item.clause, 'Unknown clause');
 
                 const statusPill = document.createElement('span');
                 statusPill.className = `shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${isHighRisk ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`;
@@ -338,7 +344,7 @@
 
                 const finding = document.createElement('p');
                 finding.className = 'text-sm leading-relaxed text-slate-700';
-                finding.textContent = String(item.finding ?? '');
+                finding.textContent = normalizeText(item.finding, 'No details provided.');
 
                 topRow.append(clause, statusPill);
                 card.append(topRow, finding);

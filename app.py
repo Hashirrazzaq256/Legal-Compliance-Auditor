@@ -33,7 +33,13 @@ def audit_contract():
         cleanup = False
     else:
         if not has_contract or not has_policies:
-            return jsonify({'error': 'Please upload both contract and policies PDFs.'}), 400
+            missing = []
+            if not has_contract:
+                missing.append('contract PDF')
+            if not has_policies:
+                missing.append('policies PDF')
+            missing_text = ' and '.join(missing)
+            return jsonify({'error': f'Missing required upload: {missing_text}.'}), 400
         if not is_pdf_file(contract_file) or not is_pdf_file(policies_file):
             return jsonify({'error': 'Only PDF files are supported.'}), 400
         contract_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(contract_file.filename))
