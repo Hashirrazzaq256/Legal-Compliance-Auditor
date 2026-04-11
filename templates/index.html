@@ -244,12 +244,8 @@
         let currentFindings = [];
         let activeFilter = 'all';
 
-        const escapeHtml = (value) => String(value ?? '')
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
+        const formatRiskLabel = (count) => `${count} Risk${count !== 1 ? 's' : ''}`;
+        const isPdfFile = (file) => Boolean(file) && (file.type === 'application/pdf' || /\.pdf$/i.test(file.name));
 
         const updateFileName = (input, label) => {
             const file = input.files?.[0];
@@ -274,11 +270,35 @@
             dropEl.addEventListener('drop', (event) => {
                 const dtFiles = event.dataTransfer?.files;
                 if (!dtFiles?.length) return;
-                inputEl.files = dtFiles;
+                const droppedFile = dtFiles[0];
+                if (!isPdfFile(droppedFile)) {
+                    inputEl.value = '';
+                    nameEl.textContent = 'Invalid file type. Please upload a PDF.';
+                    return;
+                }
+                try {
+                    const transfer = new DataTransfer();
+                    transfer.items.add(droppedFile);
+                    inputEl.files = transfer.files;
+                } catch {
+                    inputEl.files = dtFiles;
+                }
                 updateFileName(inputEl, nameEl);
             });
 
-            inputEl.addEventListener('change', () => updateFileName(inputEl, nameEl));
+            inputEl.addEventListener('change', () => {
+                const selectedFile = inputEl.files?.[0];
+                if (!selectedFile) {
+                    updateFileName(inputEl, nameEl);
+                    return;
+                }
+                if (!isPdfFile(selectedFile)) {
+                    inputEl.value = '';
+                    nameEl.textContent = 'Invalid file type. Please upload a PDF.';
+                    return;
+                }
+                updateFileName(inputEl, nameEl);
+            });
         };
 
         const renderFindings = () => {
@@ -291,7 +311,10 @@
             });
 
             if (!filtered.length) {
-                findingsContainer.innerHTML = '<div class="rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">No findings in this filter.</div>';
+                const emptyState = document.createElement('div');
+                emptyState.className = 'rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500';
+                emptyState.textContent = 'No findings in this filter.';
+                findingsContainer.appendChild(emptyState);
                 return;
             }
 
@@ -299,16 +322,27 @@
                 const isHighRisk = item.status === 'High Risk';
                 const status = isHighRisk ? 'High Risk' : 'Match';
 
-                const card = `
-                    <div class="rounded-xl border ${isHighRisk ? 'border-red-200 bg-red-50/60' : 'border-emerald-200 bg-emerald-50/60'} p-4 transition-transform duration-200 hover:-translate-y-0.5">
-                        <div class="mb-2 flex items-start justify-between gap-3">
-                            <p class="text-xs font-semibold uppercase tracking-wide ${isHighRisk ? 'text-red-800' : 'text-emerald-800'}">${escapeHtml(item.clause)}</p>
-                            <span class="shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${isHighRisk ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}">${status}</span>
-                        </div>
-                        <p class="text-sm leading-relaxed text-slate-700">${escapeHtml(item.finding)}</p>
-                    </div>
-                `;
-                findingsContainer.insertAdjacentHTML('beforeend', card);
+                const card = document.createElement('div');
+                card.className = `rounded-xl border ${isHighRisk ? 'border-red-200 bg-red-50/60' : 'border-emerald-200 bg-emerald-50/60'} p-4 transition-transform duration-200 hover:-translate-y-0.5`;
+
+                const topRow = document.createElement('div');
+                topRow.className = 'mb-2 flex items-start justify-between gap-3';
+
+                const clause = document.createElement('p');
+                clause.className = `text-xs font-semibold uppercase tracking-wide ${isHighRisk ? 'text-red-800' : 'text-emerald-800'}`;
+                clause.textContent = String(item.clause ?? '');
+
+                const statusPill = document.createElement('span');
+                statusPill.className = `shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${isHighRisk ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`;
+                statusPill.textContent = status;
+
+                const finding = document.createElement('p');
+                finding.className = 'text-sm leading-relaxed text-slate-700';
+                finding.textContent = String(item.finding ?? '');
+
+                topRow.append(clause, statusPill);
+                card.append(topRow, finding);
+                findingsContainer.appendChild(card);
             }
         };
 
@@ -321,7 +355,7 @@
             kpiHigh.textContent = high;
             kpiMatch.textContent = match;
 
-            riskBadge.textContent = `${high} Risk${high !== 1 ? 's' : ''}`;
+            riskBadge.textContent = formatRiskLabel(high);
             riskBadge.className = `inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${high ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`;
         };
 
@@ -337,6 +371,7 @@
             });
         });
         filterButtons[0].classList.add('ring-2', 'ring-offset-1', 'ring-slate-400');
+        updateKpis();
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
