@@ -10,6 +10,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+def is_pdf_file(uploaded_file):
+    if not uploaded_file or not uploaded_file.filename:
+        return False
+    return uploaded_file.filename.lower().endswith('.pdf')
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -18,13 +23,25 @@ def index():
 def audit_contract():
     contract_file = request.files.get('contract')
     policies_file = request.files.get('policies')
+    has_contract = bool(contract_file and contract_file.filename)
+    has_policies = bool(policies_file and policies_file.filename)
     
     # Fallback to test data if files aren't provided (for automated demo recording)
-    if not contract_file or contract_file.filename == '':
+    if not has_contract and not has_policies:
         contract_path = 'test_data/contract.pdf'
         policies_path = 'test_data/policies.pdf'
         cleanup = False
     else:
+        if not has_contract or not has_policies:
+            missing = []
+            if not has_contract:
+                missing.append('contract PDF')
+            if not has_policies:
+                missing.append('policies PDF')
+            missing_text = ' and '.join(missing)
+            return jsonify({'error': f'Missing required upload: {missing_text}.'}), 400
+        if not is_pdf_file(contract_file) or not is_pdf_file(policies_file):
+            return jsonify({'error': 'Only PDF files are supported.'}), 400
         contract_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(contract_file.filename))
         policies_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(policies_file.filename))
         contract_file.save(contract_path)
