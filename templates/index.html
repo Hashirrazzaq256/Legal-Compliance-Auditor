@@ -5,211 +5,348 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legal Compliance Auditor</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    boxShadow: {
+                        glass: '0 10px 40px -20px rgba(15, 23, 42, 0.35)',
+                        glow: '0 0 0 1px rgba(59,130,246,0.2), 0 0 50px rgba(59,130,246,0.2)'
+                    },
+                    backgroundImage: {
+                        'hero-grid': 'radial-gradient(circle at 1px 1px, rgb(148 163 184 / 0.15) 1px, transparent 0)'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
+        :root {
+            color-scheme: light;
+        }
+
+        body {
+            background:
+                radial-gradient(60rem 60rem at 100% -20%, rgba(59, 130, 246, 0.15), transparent 60%),
+                radial-gradient(48rem 48rem at -10% 0%, rgba(16, 185, 129, 0.12), transparent 60%),
+                #f8fafc;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 35px -20px rgba(15, 23, 42, 0.35);
+        }
+
+        .scroll-slim::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        .scroll-slim::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        ::-webkit-scrollbar-thumb {
+        .scroll-slim::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 4px;
+            border-radius: 999px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .drop-active {
+            border-color: rgb(59 130 246);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+            background: rgba(239, 246, 255, 0.8);
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        /* Loader animation */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            border: 3px solid rgba(148, 163, 184, 0.28);
+            border-top-color: #2563eb;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
+            to {
                 transform: rotate(360deg);
             }
         }
     </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen font-sans text-slate-800 antialiased selection:bg-blue-200">
+<body class="min-h-screen font-sans text-slate-800 antialiased">
+    <div class="absolute inset-0 -z-10 bg-hero-grid bg-[length:22px_22px] opacity-70"></div>
 
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div
-                    class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                        </path>
-                    </svg>
+    <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/75 backdrop-blur-xl">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-3">
+                <div class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-glow">
+                    <i data-lucide="shield-check" class="h-5 w-5"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Legal Compliance Auditor</h1>
-                    <p class="text-xs text-slate-500">AI-Powered AI Contract Verification</p>
+                    <p class="text-sm font-semibold text-slate-900">Legal Compliance Auditor</p>
+                    <p class="text-xs text-slate-500">Enterprise AI Contract Risk Intelligence</p>
                 </div>
+            </div>
+            <div class="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 sm:flex">
+                <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+                Audit Engine Online
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[calc(100vh-80px)] flex flex-col gap-6">
-
-        <!-- Upload Section -->
-        <section class="glass-panel rounded-2xl p-6 transition-all duration-300">
-            <h2 class="text-lg font-semibold mb-4 text-slate-800 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                </svg>
-                Upload Documents
-            </h2>
-            <form id="uploadForm" class="flex flex-col md:flex-row gap-4 items-end">
-                <div class="flex-1 w-full">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Target Contract (PDF)</label>
-                    <div class="relative">
-                        <input type="file" id="contract" name="contract" accept=".pdf"
-                            class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+    <main class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <section id="hero" class="glass rounded-2xl p-6 sm:p-8">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div class="max-w-2xl space-y-3">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                        <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+                        AI-Powered Legal Governance
+                    </span>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+                        Detect contract-policy misalignment in minutes, not days.
+                    </h1>
+                    <p class="text-sm text-slate-600 sm:text-base">
+                        Upload your contract and policy references to generate a structured, risk-prioritized compliance report.
+                    </p>
+                </div>
+                <div class="grid w-full gap-3 sm:grid-cols-3 lg:w-auto lg:min-w-[420px]">
+                    <div class="rounded-xl border border-slate-200 bg-white p-4">
+                        <p class="text-xs text-slate-500">Total Findings</p>
+                        <p id="kpiTotal" class="mt-1 text-2xl font-bold text-slate-900">0</p>
+                    </div>
+                    <div class="rounded-xl border border-red-200 bg-red-50/70 p-4">
+                        <p class="text-xs text-red-700">High Risk</p>
+                        <p id="kpiHigh" class="mt-1 text-2xl font-bold text-red-700">0</p>
+                    </div>
+                    <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+                        <p class="text-xs text-emerald-700">Compliance Match</p>
+                        <p id="kpiMatch" class="mt-1 text-2xl font-bold text-emerald-700">0</p>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="flex-1 w-full">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Company Policies Reference
-                        (PDF)</label>
-                    <div class="relative">
-                        <input type="file" id="policies" name="policies" accept=".pdf"
-                            class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                    </div>
+        <section class="glass rounded-2xl p-6">
+            <form id="uploadForm" class="space-y-5">
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <label for="contract" id="contractDrop" class="group rounded-xl border border-dashed border-slate-300 bg-white p-5 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50/40">
+                        <input class="hidden" type="file" id="contract" name="contract" accept=".pdf">
+                        <div class="flex items-start gap-4">
+                            <div class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-700">
+                                <i data-lucide="file-text" class="h-5 w-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900">Target Contract (PDF)</p>
+                                <p class="mt-1 text-xs text-slate-500">Drop file here or click to browse</p>
+                                <p id="contractFileName" class="mt-2 text-xs font-medium text-blue-700">No file selected</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label for="policies" id="policiesDrop" class="group rounded-xl border border-dashed border-slate-300 bg-white p-5 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/40">
+                        <input class="hidden" type="file" id="policies" name="policies" accept=".pdf">
+                        <div class="flex items-start gap-4">
+                            <div class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-emerald-100 text-emerald-700">
+                                <i data-lucide="file-stack" class="h-5 w-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900">Company Policies (PDF)</p>
+                                <p class="mt-1 text-xs text-slate-500">Drop file here or click to browse</p>
+                                <p id="policiesFileName" class="mt-2 text-xs font-medium text-emerald-700">No file selected</p>
+                            </div>
+                        </div>
+                    </label>
                 </div>
 
-                <button type="submit" id="analyzeBtn"
-                    class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center">
-                    <span>Audit Contract</span>
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                    </svg>
-                </button>
+                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
+                    <p class="text-xs text-slate-500">Tip: leave files empty to run with bundled demo documents.</p>
+                    <button id="analyzeBtn" type="submit" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70">
+                        <i data-lucide="scan-search" class="h-4 w-4"></i>
+                        Audit Contract
+                    </button>
+                </div>
             </form>
         </section>
 
-        <!-- Loading State -->
-        <div id="loadingState" class="hidden flex-col items-center justify-center py-12">
-            <div class="loader mb-4"></div>
-            <p class="text-slate-600 font-medium">Cross-referencing contract against company policies...</p>
-            <p class="text-slate-400 text-sm mt-1">Extracting clauses and running RAG analysis</p>
-        </div>
+        <section id="loadingState" class="hidden flex-col items-center justify-center gap-3 rounded-2xl border border-blue-200 bg-blue-50/60 p-10 text-center">
+            <div class="loader"></div>
+            <p class="text-sm font-semibold text-blue-900">Analyzing legal obligations and policy controls...</p>
+            <p class="text-xs text-blue-700">This can take a few moments depending on document size.</p>
+        </section>
 
-        <!-- Error State -->
-        <div id="errorState" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800" id="errorMessage">Error analyzing documents</h3>
-                </div>
+        <section id="errorState" class="hidden rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            <div class="flex items-start gap-2">
+                <i data-lucide="triangle-alert" class="mt-0.5 h-4 w-4"></i>
+                <p id="errorMessage">Unable to analyze documents.</p>
             </div>
-        </div>
+        </section>
 
-        <!-- Results Section (Split Pane) -->
-        <div id="resultsSection" class="hidden flex-1 flex flex-col lg:flex-row gap-6 min-h-0 pb-6">
-
-            <!-- Left Pane: Original Context -->
-            <div class="lg:w-1/2 flex flex-col glass-panel rounded-2xl overflow-hidden">
-                <div class="bg-slate-100/50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="font-semibold text-slate-800 flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                        Target Contract Preview
-                    </h3>
+        <section id="resultsSection" class="hidden min-h-[520px] grid-cols-1 gap-5 lg:grid lg:grid-cols-2">
+            <article class="glass flex min-h-[420px] flex-col overflow-hidden rounded-2xl">
+                <div class="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+                    <h2 class="text-sm font-semibold text-slate-900">Contract Preview</h2>
+                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600">Source Text</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-6 bg-white">
-                    <div id="contractPreview"
-                        class="prose prose-sm max-w-none text-slate-600 font-serif whitespace-pre-wrap leading-relaxed">
-                        <!-- Contract text injected here -->
+                <div id="contractPreview" class="scroll-slim flex-1 overflow-auto whitespace-pre-wrap px-5 py-4 text-sm leading-relaxed text-slate-700"></div>
+            </article>
+
+            <article class="glass flex min-h-[420px] flex-col overflow-hidden rounded-2xl">
+                <div class="space-y-3 border-b border-slate-200 px-5 py-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm font-semibold text-slate-900">Audit Findings</h2>
+                        <span id="riskCount" class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">0 Risks</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" data-filter="all" class="filter-btn rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700">All</button>
+                        <button type="button" data-filter="High Risk" class="filter-btn rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">High Risk</button>
+                        <button type="button" data-filter="Match" class="filter-btn rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Match</button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Right Pane: Audit Report -->
-            <div class="lg:w-1/2 flex flex-col glass-panel rounded-2xl overflow-hidden">
-                <div class="bg-slate-100/50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="font-semibold text-slate-800 flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
-                            </path>
-                        </svg>
-                        Audit Report
-                    </h3>
-                    <span id="riskCount"
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        0 Risks Found
-                    </span>
-                </div>
-                <div class="flex-1 overflow-y-auto p-4 bg-slate-50/50 space-y-4" id="auditFindings">
-                    <!-- Cards injected here -->
-                </div>
-            </div>
-
-        </div>
+                <div id="auditFindings" class="scroll-slim flex-1 space-y-3 overflow-auto bg-slate-50/40 p-4"></div>
+            </article>
+        </section>
     </main>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        lucide.createIcons();
 
-            const form = e.target;
+        const form = document.getElementById('uploadForm');
+        const contractInput = document.getElementById('contract');
+        const policiesInput = document.getElementById('policies');
+        const contractDrop = document.getElementById('contractDrop');
+        const policiesDrop = document.getElementById('policiesDrop');
+        const contractFileName = document.getElementById('contractFileName');
+        const policiesFileName = document.getElementById('policiesFileName');
+        const btn = document.getElementById('analyzeBtn');
+        const loading = document.getElementById('loadingState');
+        const results = document.getElementById('resultsSection');
+        const errorState = document.getElementById('errorState');
+        const findingsContainer = document.getElementById('auditFindings');
+        const contractPreview = document.getElementById('contractPreview');
+        const riskBadge = document.getElementById('riskCount');
+        const kpiTotal = document.getElementById('kpiTotal');
+        const kpiHigh = document.getElementById('kpiHigh');
+        const kpiMatch = document.getElementById('kpiMatch');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        let currentFindings = [];
+        let activeFilter = 'all';
+
+        const escapeHtml = (value) => String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+
+        const updateFileName = (input, label) => {
+            const file = input.files?.[0];
+            label.textContent = file ? file.name : 'No file selected';
+        };
+
+        const setupDropzone = (dropEl, inputEl, nameEl) => {
+            ['dragenter', 'dragover'].forEach((eventName) => {
+                dropEl.addEventListener(eventName, (event) => {
+                    event.preventDefault();
+                    dropEl.classList.add('drop-active');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach((eventName) => {
+                dropEl.addEventListener(eventName, (event) => {
+                    event.preventDefault();
+                    dropEl.classList.remove('drop-active');
+                });
+            });
+
+            dropEl.addEventListener('drop', (event) => {
+                const dtFiles = event.dataTransfer?.files;
+                if (!dtFiles?.length) return;
+                inputEl.files = dtFiles;
+                updateFileName(inputEl, nameEl);
+            });
+
+            inputEl.addEventListener('change', () => updateFileName(inputEl, nameEl));
+        };
+
+        const renderFindings = () => {
+            findingsContainer.innerHTML = '';
+
+            const filtered = currentFindings.filter((item) => {
+                if (activeFilter === 'all') return true;
+                const status = item.status === 'High Risk' ? 'High Risk' : 'Match';
+                return status === activeFilter;
+            });
+
+            if (!filtered.length) {
+                findingsContainer.innerHTML = '<div class="rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">No findings in this filter.</div>';
+                return;
+            }
+
+            for (const item of filtered) {
+                const isHighRisk = item.status === 'High Risk';
+                const status = isHighRisk ? 'High Risk' : 'Match';
+
+                const card = `
+                    <div class="rounded-xl border ${isHighRisk ? 'border-red-200 bg-red-50/60' : 'border-emerald-200 bg-emerald-50/60'} p-4 transition-transform duration-200 hover:-translate-y-0.5">
+                        <div class="mb-2 flex items-start justify-between gap-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide ${isHighRisk ? 'text-red-800' : 'text-emerald-800'}">${escapeHtml(item.clause)}</p>
+                            <span class="shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${isHighRisk ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}">${status}</span>
+                        </div>
+                        <p class="text-sm leading-relaxed text-slate-700">${escapeHtml(item.finding)}</p>
+                    </div>
+                `;
+                findingsContainer.insertAdjacentHTML('beforeend', card);
+            }
+        };
+
+        const updateKpis = () => {
+            const total = currentFindings.length;
+            const high = currentFindings.filter((item) => item.status === 'High Risk').length;
+            const match = total - high;
+
+            kpiTotal.textContent = total;
+            kpiHigh.textContent = high;
+            kpiMatch.textContent = match;
+
+            riskBadge.textContent = `${high} Risk${high !== 1 ? 's' : ''}`;
+            riskBadge.className = `inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${high ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`;
+        };
+
+        setupDropzone(contractDrop, contractInput, contractFileName);
+        setupDropzone(policiesDrop, policiesInput, policiesFileName);
+
+        filterButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                activeFilter = button.dataset.filter || 'all';
+                filterButtons.forEach((b) => b.classList.remove('ring-2', 'ring-offset-1', 'ring-slate-400'));
+                button.classList.add('ring-2', 'ring-offset-1', 'ring-slate-400');
+                renderFindings();
+            });
+        });
+        filterButtons[0].classList.add('ring-2', 'ring-offset-1', 'ring-slate-400');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
             const formData = new FormData(form);
-            const btn = document.getElementById('analyzeBtn');
-            const loading = document.getElementById('loadingState');
-            const results = document.getElementById('resultsSection');
-            const errorState = document.getElementById('errorState');
-
-            // Reset UI
             btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            errorState.classList.add('hidden');
+            results.classList.add('hidden');
             loading.classList.remove('hidden');
             loading.classList.add('flex');
-            results.classList.add('hidden');
-            errorState.classList.add('hidden');
 
             try {
                 const response = await fetch('/audit', {
@@ -218,79 +355,41 @@
                 });
 
                 const data = await response.json();
-
                 if (!response.ok) {
                     throw new Error(data.error || 'Server error occurred');
                 }
 
-                // Populate content
-                document.getElementById('contractPreview').textContent = data.contract_preview;
+                currentFindings = Array.isArray(data.findings) ? data.findings : [];
+                contractPreview.textContent = data.contract_preview || 'No contract preview available.';
+                activeFilter = 'all';
+                filterButtons.forEach((b, index) => {
+                    b.classList.remove('ring-2', 'ring-offset-1', 'ring-slate-400');
+                    if (index === 0) b.classList.add('ring-2', 'ring-offset-1', 'ring-slate-400');
+                });
 
-                const findingsContainer = document.getElementById('auditFindings');
-                findingsContainer.innerHTML = '';
+                updateKpis();
+                renderFindings();
 
-                let highRiskCount = 0;
-
-                if (data.findings && data.findings.length > 0) {
-                    data.findings.forEach(item => {
-                        const isHighRisk = item.status === 'High Risk';
-                        if (isHighRisk) highRiskCount++;
-
-                        const colorClass = isHighRisk ? 'border-red-200 bg-red-50/50' : 'border-emerald-200 bg-emerald-50/50';
-                        const iconBg = isHighRisk ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600';
-                        const titleColor = isHighRisk ? 'text-red-800' : 'text-emerald-800';
-                        const statusBadge = isHighRisk
-                            ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">High Risk</span>`
-                            : `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">Match</span>`;
-
-                        const icon = isHighRisk
-                            ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`
-                            : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
-
-                        const card = `
-                            <div class="rounded-xl border ${colorClass} p-4 shadow-sm transition-transform hover:-translate-y-1 duration-200">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}">
-                                            ${icon}
-                                        </div>
-                                        <h4 class="font-bold ${titleColor} text-sm uppercase tracking-wider">${item.clause}</h4>
-                                    </div>
-                                    ${statusBadge}
-                                </div>
-                                <p class="text-slate-700 text-sm leading-relaxed ml-11">${item.finding}</p>
-                            </div>
-                        `;
-                        findingsContainer.insertAdjacentHTML('beforeend', card);
-                    });
-                } else {
-                    findingsContainer.innerHTML = `<div class="p-8 text-center text-slate-500">No findings generated. Check documents.</div>`;
-                }
-
-                // Update Risk Counter
-                const riskBadge = document.getElementById('riskCount');
-                riskBadge.textContent = `${highRiskCount} Risk${highRiskCount !== 1 ? 's' : ''} Found`;
-                if (highRiskCount === 0) {
-                    riskBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800';
-                } else {
-                    riskBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
-                }
-
-                // Show results
-                loading.classList.remove('flex');
                 loading.classList.add('hidden');
+                loading.classList.remove('flex');
                 results.classList.remove('hidden');
 
+                if (window.gsap) {
+                    gsap.from('#resultsSection article', { opacity: 0, y: 14, duration: 0.45, stagger: 0.08, ease: 'power2.out' });
+                }
             } catch (error) {
-                loading.classList.remove('flex');
                 loading.classList.add('hidden');
+                loading.classList.remove('flex');
                 errorState.classList.remove('hidden');
-                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('errorMessage').textContent = error.message || 'Unknown error';
             } finally {
                 btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
             }
         });
+
+        if (window.gsap) {
+            gsap.from('#hero', { opacity: 0, y: 12, duration: 0.45, ease: 'power2.out' });
+        }
     </script>
 </body>
 
